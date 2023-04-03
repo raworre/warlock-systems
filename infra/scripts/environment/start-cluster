@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Checking for Minikube..."
+MINIKUBE=$(which minikube)
+if [ -z "${MINIKUBE}" ]; then
+    echo "Minikube not installed. Install Minikube here: https://kubernetes.io/docs/tasks/tools/install-minikube/"
+    exit 1
+else
+    MINIKUBE_VERSION=$(minikube version | grep -Po "minikube version: \K[^ ]+")
+    echo "Minikube is installed! ${MINIKUBE_VERSION}"
+fi
