@@ -54,3 +54,13 @@ else
     KUBECTL_VERSION=$(kubectl version --short | grep -Po "^Client version: \K[^ ]+$")
     echo "Kube Control is installed! ${KUBECTL_VERSION}"
 fi
+
+echo "Checking Docker..."
+DOCKER=$(which docker)
+if [ -z "${DOCKER}" ]; then
+  echo "Install Docker from here: https://docs.docker.com/install/"
+  exit 1
+else
+  DOCKER_VERSION=$(docker version | grep -Po "^ Version:(\s+)\K[^ ]+$")
+  echo "Docker is installed! ${DOCKER_VERSION}"
+fi
