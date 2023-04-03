@@ -68,6 +68,9 @@ else
   echo "Docker is installed! ${DOCKER_VERSION}"
 fi
 
+echo "Switching to use Minikube's built-in Docker daemon..."
+eval $(minikube docker-env)
+
 echo "Starting core services..."
 for KUBE_FILE in "${COMMON_FILES[@]}"; do
   if [ ! -f "${KUBE_FILE}" ]; then
