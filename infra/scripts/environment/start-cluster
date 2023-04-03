@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Defining common cluster services
+COMMON_FILES=("mongodb.yaml" "service-gateway.yaml")
+
 echo "Checking for Minikube..."
 MINIKUBE=$(which minikube)
 if [ -z "${MINIKUBE}" ]; then
@@ -64,3 +67,13 @@ else
   DOCKER_VERSION=$(docker version | grep -Po "^ Version:(\s+)\K[^ ]+$")
   echo "Docker is installed! ${DOCKER_VERSION}"
 fi
+
+echo "Starting core services..."
+for KUBE_FILE in "${COMMON_FILES[@]}"; do
+  if [ ! -f "${KUBE_FILE}" ]; then
+    echo "${KUBE_FILE} not found..."
+  else
+    echo "Deploying ${KUBE_FILE} to cluster..."
+    kubectl apply -f "${KUBE_FILE}" || echo "Error deploying ${KUBE_FILE} to cluster..."
+  fi
+done
