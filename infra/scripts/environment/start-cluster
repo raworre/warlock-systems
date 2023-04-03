@@ -44,3 +44,13 @@ else
     echo "Adding entry to /etc/hosts: ${MINIKUBE_IP}    service-gateway"
     sudo sh -c "echo '\n\n#Minikube gateway\n${MINIKUBE_IP}     service-gateway' >> ${ETC_HOSTS}"
 fi
+
+echo "Checking Kubernetes Control..."
+KUBECTL=$(which kubectl)
+if [ -z "${KUBECTL}" ]; then
+    echo "Install Kubectl from here: https://kubernetes.io/docs/tasks/tools/install-kubectl/"
+    exit 1
+else
+    KUBECTL_VERSION=$(kubectl version --short | grep -Po "^Client version: \K[^ ]+$")
+    echo "Kube Control is installed! ${KUBECTL_VERSION}"
+fi
