@@ -28,3 +28,19 @@ fi
 
 MINIKUBE_IP=$(minikube ip)
 echo "Minikube is running on ${MINIKUBE_IP}"
+
+echo "Add service gateway entry to /etc/hosts file that points to Minikube IP..."
+ETC_HOSTS="/etc/hosts"
+EXISTING_ENTRY=$(grep --text 'service-gateway' ${ETC_HOSTS})
+if [ -n "${EXISTING_ENTRY}" ]; then
+    EXISTING_IP=$(echo "${EXISTING_ENTRY}" | sed 's/\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\).*/\1/')
+    if [ "${EXISTING_IP}" != "${MINIKUBE_IP}" ]; then
+        echo "Updating existing /etc/hosts entry for service-gateway from ${EXISTING_IP} to ${MINIKUBE_IP}"
+        sudo sed -i -e "s/${EXISTING_IP}/${MINIKUBE_IP}/g" ${ETC_HOSTS}
+    else
+        echo "/etc/hosts file already has correct Minikube IP: ${EXISTING_ENTRY}"
+    fi
+else
+    echo "Adding entry to /etc/hosts: ${MINIKUBE_IP}    service-gateway"
+    sudo sh -c "echo '\n\n#Minikube gateway\n${MINIKUBE_IP}     service-gateway' >> ${ETC_HOSTS}"
+fi
