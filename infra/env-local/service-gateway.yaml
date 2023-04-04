@@ -31,3 +31,34 @@ spec:
               value: "mongodb:27017"
             - name: KONG_MONG_DB
               value: "gateway"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-gateway-service
+spec:
+  selector:
+    app: service-gateway
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: service-gateway-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: service-gateway
+      http:
+        paths:
+          - path: /user-manager
+            pathType: Prefix
+            backend:
+              service:
+                name: user-manager-service
+                port:
+                  name: http
