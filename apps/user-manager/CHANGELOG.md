@@ -8,8 +8,6 @@ and this project adheres to
 
 ## Unreleased
 
-## [0.0.1] - 2023-03-05
-
 ### Added
 
 - Exposes `/health` endpoint for general system health
