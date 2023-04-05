@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Checking Minikube status..."
+MINIKUBE_STATUS=$(minikube status)
+if [ $? -eq 0 ]; then
+    echo "Shutting down Minikube..."
+    minikube stop
+fi
+
+MINIKUBE_STATUS=$(minikube status)
+if [ $? -ne 0 ]; then
+    echo "Minikube is shut down..."
+fi

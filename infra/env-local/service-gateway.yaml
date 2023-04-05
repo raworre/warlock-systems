@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-gateway
+  labels:
+    app: service-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-gateway
+  template:
+    metadata:
+      labels:
+        app: service-gateway
+    spec:
+      containers:
+        - name: service-gateway
+          image: kong:latest
+          ports:
+            - containerPort: 8000
+            - containerPort: 8443
+            - containerPort: 8001
+            - containerPort: 8444
+          env:
+            - name: KONG_DATABASE
+              value: "off"
+            - name: KONG_CUSTOM_PLUGINS
+              value: "mongo"
+            - name: KONG_MONGO_HOSTS
+              value: "mongodb:27017"
+            - name: KONG_MONG_DB
+              value: "gateway"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-gateway-service
+spec:
+  selector:
+    app: service-gateway
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: service-gateway-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: service-gateway
+      http:
+        paths:
+          - path: /user-manager
+            pathType: Prefix
+            backend:
+              service:
+                name: user-manager-service
+                port:
+                  name: http

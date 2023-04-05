@@ -1,0 +1,38 @@
+#!/bin/bash
+
+minikube status > /dev/null
+if [ $? -eq 0 ]; then
+  echo "Minikube is running..."
+  echo "Checking cluster resources..."
+  echo "---"
+
+  echo "ConfigMaps:"
+  kubectl get cm
+  echo "---"
+
+  echo "Persistent Volumes:"
+  kubectl get pv
+  echo "---"
+
+  echo "Persistent Volume Claims:"
+  kubectl get pvc
+  echo "---"
+
+  echo "Deployments:"
+  kubectl get deploy
+  echo "---"
+
+  echo "Services:"
+  kubectl get svc
+  echo "---"
+
+  echo "Pods:"
+  kubectl get pods
+  echo "---"
+
+  echo "Checking Docker images available to cluster..."
+  eval $(minikube docker-env)
+  docker images -f "dangling=false"
+else
+  echo "Minikube is not running..."
+fi

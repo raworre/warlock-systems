@@ -1,0 +1,18 @@
+#!/bin/bash
+
+MINIKUBE_STATUS=$(minikube status)
+if [ $? -eq 0 ]; then
+  minikube stop
+fi
+
+echo "This will completely destroy the Minikube cluster and all persisted data..."
+echo "This process can not be reversed and data cannot be restored..."
+read -p "Do you want to proceed? " PROCEED
+
+case $PROCEED in
+  y|Y|Yes|yEs|yeS|YEs|YeS|yES|YES|yes )
+    echo "Destroying cluster...";
+    minikube delete;;
+  * )
+    echo "Preserving cluster...";;
+esac

@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Defining common cluster services
+COMMON_FILES=("mongodb.yaml" "service-gateway.yaml")
+
+echo "Checking for Minikube..."
+MINIKUBE=$(which minikube)
+if [ -z "${MINIKUBE}" ]; then
+    echo "Minikube not installed. Install Minikube here: https://kubernetes.io/docs/tasks/tools/install-minikube/"
+    exit 1
+else
+    MINIKUBE_VERSION=$(minikube version | grep -Po "minikube version: \K[^ ]+")
+    echo "Minikube is installed! ${MINIKUBE_VERSION}"
+fi
+
+echo "Checking Minikube status..."
+MINIKUBE_STATUS=$(minikube status)
+if [ $? -ne 0 ]; then
+    echo "Minikube not running, starting..."
+    minikube start --memory=16384 || { echo "Minikube failed to start..."; exit 1; }
+
+    MINIKUBE_STATUS=$(minikube status)
+    if [ $? -ne 0 ]; then
+        echo "Minikube failed to start..."
+        echo $MINIKUBE_STATUS
+        exit 1
+    fi
+else
+    echo "Minikube is running..."
+fi
+
+MINIKUBE_IP=$(minikube ip)
+echo "Minikube is running on ${MINIKUBE_IP}"
+
+echo "Add service gateway entry to /etc/hosts file that points to Minikube IP..."
+ETC_HOSTS="/etc/hosts"
+EXISTING_ENTRY=$(grep --text 'service-gateway' ${ETC_HOSTS})
+if [ -n "${EXISTING_ENTRY}" ]; then
+    EXISTING_IP=$(echo "${EXISTING_ENTRY}" | sed 's/\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\).*/\1/')
+    if [ "${EXISTING_IP}" != "${MINIKUBE_IP}" ]; then
+        echo "Updating existing /etc/hosts entry for service-gateway from ${EXISTING_IP} to ${MINIKUBE_IP}"
+        sudo sed -i -e "s/${EXISTING_IP}/${MINIKUBE_IP}/g" ${ETC_HOSTS}
+    else
+        echo "/etc/hosts file already has correct Minikube IP: ${EXISTING_ENTRY}"
+    fi
+else
+    echo "Adding entry to /etc/hosts: ${MINIKUBE_IP}    service-gateway"
+    sudo sh -c "echo '\n\n#Minikube gateway\n${MINIKUBE_IP}     service-gateway' >> ${ETC_HOSTS}"
+fi
+
+echo "Checking Kubernetes Control..."
+KUBECTL=$(which kubectl)
+if [ -z "${KUBECTL}" ]; then
+    echo "Install Kubectl from here: https://kubernetes.io/docs/tasks/tools/install-kubectl/"
+    exit 1
+else
+    KUBECTL_VERSION=$(kubectl version --short | grep -Po "^Client version: \K[^ ]+$")
+    echo "Kube Control is installed! ${KUBECTL_VERSION}"
+fi
+
+echo "Checking Docker..."
+DOCKER=$(which docker)
+if [ -z "${DOCKER}" ]; then
+  echo "Install Docker from here: https://docs.docker.com/install/"
+  exit 1
+else
+  DOCKER_VERSION=$(docker version | grep -Po "^ Version:(\s+)\K[^ ]+$")
+  echo "Docker is installed! ${DOCKER_VERSION}"
+fi
+
+echo "Switching to use Minikube's built-in Docker daemon..."
+eval $(minikube docker-env)
+
+echo "Starting core services..."
+for KUBE_FILE in "${COMMON_FILES[@]}"; do
+  if [ ! -f "${KUBE_FILE}" ]; then
+    echo "${KUBE_FILE} not found..."
+  else
+    echo "Deploying ${KUBE_FILE} to cluster..."
+    kubectl apply -f "${KUBE_FILE}" || echo "Error deploying ${KUBE_FILE} to cluster..."
+  fi
+done
