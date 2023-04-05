@@ -11,10 +11,5 @@ and this project adheres to
 ### Added
 
 - Placeholder script for app/service `build` operation
-
-## [0.0.1] - 2023-03-05
-
-### Added
-
 - Scripts for managing a Minikube cluster with MongoDB and Kong API Gateway
   deployments.
