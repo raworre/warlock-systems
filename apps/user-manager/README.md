@@ -10,9 +10,10 @@ container solution.
 To build and run this service, you need to have the following software installed
 on your system:
 
-* Java 11 or higher
-* Gradle
-* Docker
+- Java 11 or higher
+- Gradle
+- Docker
+- Symlink in project folder named `s` that links to `infra/scripts/app`
 
 ## Building the Service
 
