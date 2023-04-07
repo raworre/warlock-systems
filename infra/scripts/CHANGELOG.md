@@ -10,8 +10,20 @@ and this project adheres to
 
 ### Added
 
-- Placeholder script for deploying and removing resource(s) in the given
-  environment.
-- Placeholder script for app/service `build` operation.
-- Scripts for managing a Minikube cluster with MongoDB and Kong API Gateway
-  deployments.
+- `environment/deploy-resource` script takes a list of Kubernetes manifest
+  files and attempts to deploy them to the current Minikube cluster.
+- `environment/remove-resource` script takes a list of Kubernetes manifest
+  files and attempts to remove them from the current Minikube cluster.
+- `app/build` script checks the current project folder for Gradle scripts or
+  .NET solution files and uses the appropriate build tool to build the project.
+- `app/docker-compose` script checks for a Dockerfile in the current project
+  folder, extracts the app name and version from project files, and builds a
+  Docker image to be tagged as `warlock-systems/<app-name>:<version>` and pushed
+  to the local Minikube Docker daemon.
+- `environment/dextroy-cluster` script shuts down the running Minikube cluster
+  and destroys the cluster completely.
+- `environment/cluster-status` script checks for the status of the Minikube
+  cluster and displays information about deployed resources.
+- `environment/stop-cluster` script shuts down the running Minikube cluster
+- `environment/start-cluster` script checks for dependencies and starts a
+  Minikube cluster with required resources to support future apps or services.
