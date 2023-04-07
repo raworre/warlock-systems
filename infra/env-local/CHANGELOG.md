@@ -8,5 +8,5 @@ and this project adheres to
 
 ## Unreleased
 
-- Defined Kuberentes manifests for the core MongoDB and Kong API gateway
+- Defined Kubernetes manifests for the core MongoDB and Kong API gateway
   resources.

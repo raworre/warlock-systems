@@ -68,6 +68,10 @@ else
   echo "Docker is installed! ${DOCKER_VERSION}"
 fi
 
+echo "Enabling Minikube ingress add-on"
+minikube addons enable ingress || { echo "Minikube failed to enable ingress"; exit 1; }
+echo
+
 echo "Switching to use Minikube's built-in Docker daemon..."
 eval $(minikube docker-env)
 
@@ -76,6 +80,8 @@ for KUBE_FILE in "${COMMON_FILES[@]}"; do
   if [ ! -f "${KUBE_FILE}" ]; then
     echo "${KUBE_FILE} not found..."
   else
+    echo "Removing any existing definitions from ${KUBE_FILE}"
+    kubectl delete -f "${KUBE_FILE}" || echo "Issue removing ${KUBE_FILE} from cluster..."
     echo "Deploying ${KUBE_FILE} to cluster..."
     kubectl apply -f "${KUBE_FILE}" || echo "Error deploying ${KUBE_FILE} to cluster..."
   fi
