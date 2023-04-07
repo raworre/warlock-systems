@@ -10,4 +10,5 @@ and this project adheres to
 
 ### Added
 
-- Exposes `/health` endpoint for general system health
+- Exposes `/actuator/health` endpoint for general system health
+- Exposes `/login` endpoint to be implemented in the future
