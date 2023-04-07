@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Added
 
-- Placeholder script for app/service `build` operation
+- Placeholder script for deploying and removing resource(s) in the given
+  environment.
+- Placeholder script for app/service `build` operation.
 - Scripts for managing a Minikube cluster with MongoDB and Kong API Gateway
   deployments.
