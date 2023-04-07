@@ -1,4 +1,15 @@
 #!/bin/bash
 
 LOCATION=$(pwd)
-echo "Build ${LOCATION}"
+CURRENT_APP=$(basename "$PWD")
+
+if [ -e "${LOCATION}/gradlew" ]; then
+  echo "Building ${CURRENT_APP} with Gradle..."
+  ./gradlew clean build installDist
+elif [ -n "$(find ${LOCATION} -maxdepth 1 -name '*.sln' -print -quit)" ]; then
+  echo "Building ${CURRENT_APP} with Dotnet..."
+  dotnet clean
+  dotnet build
+else
+  echo "Could not determine how to build the ${CURRENT_APP} project..."
+fi
