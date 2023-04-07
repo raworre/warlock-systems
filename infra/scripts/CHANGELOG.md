@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- `core/sync` script pulls updates from Git in the given folder.
 - `environment/deploy-resource` script takes a list of Kubernetes manifest
   files and attempts to deploy them to the current Minikube cluster.
 - `environment/remove-resource` script takes a list of Kubernetes manifest
