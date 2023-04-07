@@ -29,7 +29,7 @@ spec:
               value: "mongo"
             - name: KONG_MONGO_HOSTS
               value: "mongodb:27017"
-            - name: KONG_MONG_DB
+            - name: KONG_MONGO_DB
               value: "gateway"
 ---
 apiVersion: v1
@@ -48,8 +48,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: service-gateway-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - host: service-gateway
