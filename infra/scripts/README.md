@@ -34,12 +34,17 @@ The following scripts are available to manage Environments:
 - `s/cluster-status` checks the status of the environment's Minikube cluster.
   - If the Minikube cluster is running this will return basic information
     about resources defined in the cluster.
-- `s/start-cluster` will start the Minikube cluster and start the basic MongoDB
-  and Kong API gateway.
-- `s/stop-cluster` will spin down all core cluster resources and then stop the
-  Minikube instance.
+- `s/deploy-resource` will deploy a group of resources defined by a list of
+  provided `yaml` files.
 - `s/destroy-cluster` will spin down all core cluster resources, stop
   the Minikube instance, and destroy the cluster completely.
   - :warning: This will completely wipe any data persisted in the MongoDB
     instance and wipe any images pushed to the Minikube Docker daemon, and 
     these resources can not be restored. :warning:
+- `s/remove-resource` will remove a group of resources defined by a provided
+  list of `yaml` files.
+- `s/start-cluster` will start the Minikube cluster and start the basic MongoDB
+  and Kong API gateway.
+- `s/stop-cluster` will spin down all core cluster resources and then stop the
+  Minikube instance.
+

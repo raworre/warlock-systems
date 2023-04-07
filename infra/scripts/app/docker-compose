@@ -1,0 +1,22 @@
+#!/bin/bash
+
+LOCATION=$(pwd)
+CURRENT_SERVICE=$(basename "$PWD")
+
+if [ -e "${LOCATION}/Dockerfile" ]; then
+  echo "Generating Docker image for ${CURRENT_SERVICE}/Dockerfile..."
+  SERVICE_NAME="${CURRENT_SERVICE}"
+  SERVICE_VERSION="0.0.0"
+  if [ -e "${LOCATION}/gradlew" ]; then
+    echo "Getting service name and version from Gradle...";
+    SERVICE_NAME=$(grep '^rootProject\.name' settings.gradle | sed "s/^.*=\s*'\([^']*\)'.*$/\1/")
+    SERVICE_VERSION=$(grep -Po "(?<=version = ')[^']+" build.gradle)
+  elif [ -n "$(find ${LOCATION} -maxdepth 1 -name '*.sln' -print -quit)" ]; then
+    echo "Getting service name and version from .NET properties...";
+    SERVICE_NAME=$(grep -Po "<AssemblyName>\K[^<]+" "${CURRENT_SERVICE}.csproj")
+    SERVICE_VERSION=$(grep -Po "<Version>\K[^<]+" "${CURRENT_SERVICE}.csproj")
+  fi
+  echo "Building Docker image for warlock-services/${SERVICE_NAME}:${SERVICE_VERSION}"
+  eval $(minikube docker-env)
+  docker build ./ -t "warlock-services/${SERVICE_NAME}:${SERVICE_VERSION}"
+fi

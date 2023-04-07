@@ -8,5 +8,6 @@ and this project adheres to
 
 ## Unreleased
 
+- Defined Kubernetes manifest for User Manager
 - Defined Kubernetes manifests for the core MongoDB and Kong API gateway
   resources.
