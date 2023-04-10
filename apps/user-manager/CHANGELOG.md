@@ -8,6 +8,12 @@ and this project adheres to
 
 ## Unreleased
 
+###
+
+- `/login` endpoint is a POST operation and accepts a validated request body
+
+## user-manager-v0.0.1
+
 ### Added
 
 - Exposes `/actuator/health` endpoint for general system health
