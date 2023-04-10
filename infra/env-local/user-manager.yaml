@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-manager
-          image: warlock-services/user-manager:0.0.1
+          image: warlock-services/user-manager:0.0.2
           ports:
             - containerPort: 8080
 ---
