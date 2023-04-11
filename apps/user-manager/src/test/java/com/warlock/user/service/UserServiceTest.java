@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -56,6 +57,23 @@ public class UserServiceTest {
         when(repository.findByUsername(anyString())).thenReturn(null);
 
         assertThrows(UsernameNotFoundException.class, () -> service.login(loginRequest));
+        verify(repository, times(1))
+                .findByUsername(loginRequest.getUsername());
+    }
+
+    @Test
+    public void login_InvalidPasswordShouldThrowException() {
+        var loginUser = "hrothgar.warlock";
+        var loginRequest = LoginRequest.builder()
+                .username(loginUser)
+                .password("password").build();
+        var userDocument = UserDocument.builder()
+                .username(loginRequest.getUsername())
+                .password("")
+                .build();
+        when(repository.findByUsername(anyString())).thenReturn(userDocument);
+
+        assertThrows(BadCredentialsException.class, () -> service.login(loginRequest));
         verify(repository, times(1))
                 .findByUsername(loginRequest.getUsername());
     }
