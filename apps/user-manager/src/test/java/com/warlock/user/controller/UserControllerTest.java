@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
@@ -90,5 +92,33 @@ public class UserControllerTest {
                 .getSubject();
 
         assertThat(sub).isEqualTo(loginUsername);
+    }
+
+    @Test
+    public void login_UsernameNotFoundReturnsUnauthorized() throws Exception {
+        var loginUsername = "hrothgar.warlock";
+        var loginRequest = LoginRequest.builder()
+                .password("username")
+                .username(loginUsername).build();
+        when(service.login(any())).thenThrow(new UsernameNotFoundException(""));
+
+        mockMvc.perform(post("/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void login_BadPasswordReturnsUnauthorized() throws Exception {
+        var loginUsername = "hrothgar.warlock";
+        var loginRequest = LoginRequest.builder()
+                .password("username")
+                .username(loginUsername).build();
+        when(service.login(any())).thenThrow(new BadCredentialsException(""));
+
+        mockMvc.perform(post("/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized());
     }
 }
