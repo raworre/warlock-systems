@@ -10,7 +10,9 @@ and this project adheres to
 
 ###
 
-- `/login` endpoint is a POST operation and accepts a validated request body
+- `/login` endpoint is a POST operation and accepts a validated request body and
+  now returns a JSON response with a `token` field that contains a valid JWT
+  token who's `sub` field is the `username` from the login request body.
 
 ## user-manager-v0.0.1
 
