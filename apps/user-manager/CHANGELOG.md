@@ -8,6 +8,14 @@ and this project adheres to
 
 ## Unreleased
 
+###
+
+- `/login` endpoint is a POST operation and accepts a validated request body and
+  now returns a JSON response with a `token` field that contains a valid JWT
+  token who's `sub` field is the `username` from the login request body.
+
+## user-manager-v0.0.1
+
 ### Added
 
 - Exposes `/actuator/health` endpoint for general system health
