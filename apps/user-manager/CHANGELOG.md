@@ -8,7 +8,7 @@ and this project adheres to
 
 ## Unreleased
 
-###
+### Changed
 
 - `/login` endpoint is a POST operation and accepts a validated request body and
   now returns a JSON response with a `token` field that contains a valid JWT
