@@ -7,27 +7,26 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.validation.Valid;
 
 import static org.springframework.http.ResponseEntity.ok;
 
 @Controller
-@Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -48,8 +47,15 @@ public class UserController {
     public ResponseEntity<UserToken> login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
-        log.info("Controller login called");
         var token = userService.login(loginRequest);
         return ok(UserToken.builder().token(token).build());
     }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public void handleUserNotFound() { }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public void handleBadCredentials() { }
 }

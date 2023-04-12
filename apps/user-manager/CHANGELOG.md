@@ -8,11 +8,13 @@ and this project adheres to
 
 ## Unreleased
 
-###
+### Changed
 
 - `/login` endpoint is a POST operation and accepts a validated request body and
   now returns a JSON response with a `token` field that contains a valid JWT
   token who's `sub` field is the `username` from the login request body.
+- `/login` endpoint hashes the value of the `password` field from the request
+  and compares the result to the value stored in the database.
 
 ## user-manager-v0.0.1
 

@@ -1,18 +1,33 @@
 package com.warlock.user.service;
 
 import com.warlock.user.model.LoginRequest;
+import com.warlock.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class UserService {
+    private final UserRepository userRepository;
+
     public String login(LoginRequest loginRequest) {
-        log.info("Login service called");
+        var user = userRepository.findByUsername(loginRequest.getUsername());
+        if (null == user) {
+            throw new UsernameNotFoundException("Invalid credentials");
+        }
+
+        var passwordEncoder = new BCryptPasswordEncoder();
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid credentials");
+        }
+
         return Jwts.builder()
                 .setSubject(loginRequest.getUsername())
                 .setIssuedAt(new Date())
