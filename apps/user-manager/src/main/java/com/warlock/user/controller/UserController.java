@@ -35,15 +35,17 @@ public class UserController {
     @ApiResponse(
             responseCode = "200",
             description = "Successfully logged in",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(oneOf = UserToken.class)))
     @ApiResponse(
             responseCode = "400",
             description = "Request body is invalid",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(hidden = true)))
+            content = @Content(schema = @Schema(hidden = true)))
     @ApiResponse(
             responseCode = "401",
             description = "User not recognized",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(hidden = true)))
+            content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity<UserToken> login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
