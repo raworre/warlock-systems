@@ -1,6 +1,7 @@
 package com.warlock.user.service;
 
 import com.warlock.user.model.LoginRequest;
+import com.warlock.user.model.RegistrationRequest;
 import com.warlock.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,5 +34,9 @@ public class UserService {
                 .setIssuedAt(new Date())
                 .signWith(SignatureAlgorithm.HS512, "secretKey")
                 .compact();
+    }
+
+    public String register(RegistrationRequest registrationRequest) {
+        return "";
     }
 }

@@ -1,6 +1,7 @@
 package com.warlock.user.controller;
 
 import com.warlock.user.model.LoginRequest;
+import com.warlock.user.model.RegistrationRequest;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +38,7 @@ public class UserController {
             description = "Successfully logged in",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(oneOf = UserToken.class)))
+                    schema = @Schema(implementation = UserToken.class)))
     @ApiResponse(
             responseCode = "400",
             description = "Request body is invalid",
@@ -51,6 +52,26 @@ public class UserController {
     ) {
         var token = userService.login(loginRequest);
         return ok(UserToken.builder().token(token).build());
+    }
+
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Registers new user",
+            description = "Takes a registration object and creates a new user before returning a valid access token for future operations")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully registered and logged in",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UserToken.class)))
+    @ApiResponse(
+            responseCode = "400",
+            description = "Registration is invalid",
+            content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity<UserToken> register(
+            @RequestBody @Valid RegistrationRequest registrationRequest
+    ) {
+        return ok(UserToken.builder().build());
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
