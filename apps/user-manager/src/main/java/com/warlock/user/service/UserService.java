@@ -37,6 +37,10 @@ public class UserService {
     }
 
     public String register(RegistrationRequest registrationRequest) {
+        var user = userRepository.findByUsername(registrationRequest.getUsername());
+        if (null != user) {
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
         return "";
     }
 }

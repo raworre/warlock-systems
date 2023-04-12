@@ -4,6 +4,7 @@ import com.warlock.user.model.LoginRequest;
 import com.warlock.user.model.RegistrationRequest;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
+import com.warlock.user.service.UsernameAlreadyExistsException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -71,7 +72,8 @@ public class UserController {
     public ResponseEntity<UserToken> register(
             @RequestBody @Valid RegistrationRequest registrationRequest
     ) {
-        return ok(UserToken.builder().build());
+        var token = userService.register(registrationRequest);
+        return ok(UserToken.builder().token(token).build());
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -81,4 +83,8 @@ public class UserController {
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handleBadCredentials() { }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleUsernameAlreadyExists() { }
 }
