@@ -86,3 +86,6 @@ for KUBE_FILE in "${COMMON_FILES[@]}"; do
     kubectl apply -f "${KUBE_FILE}" || echo "Error deploying ${KUBE_FILE} to cluster..."
   fi
 done
+
+echo "Done with startup..."
+echo $(date +"%F %T.%N")

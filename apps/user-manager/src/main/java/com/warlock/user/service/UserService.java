@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Service
@@ -52,6 +53,7 @@ public class UserService {
                 .firstName(registrationRequest.getFirstName())
                 .lastName(registrationRequest.getLastName())
                 .birthdate(registrationRequest.getBirthdate())
+                .registrationDate(LocalDate.now())
                 .build();
         profileRepository.save(profileDoc);
 

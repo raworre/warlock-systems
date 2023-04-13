@@ -16,4 +16,6 @@ else
       kubectl apply -f "${RESOURCE_FILE}" || echo "Error deploying ${RESOURCE_FILE} to cluster..."
     fi
   done
+  NOW=$(date +"%F %T.%N")
+  echo "Done deploying resources: ${NOW}"
 fi

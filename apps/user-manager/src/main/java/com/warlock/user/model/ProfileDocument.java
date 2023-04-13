@@ -16,4 +16,5 @@ public class ProfileDocument {
     private String firstName;
     private String lastName;
     private LocalDate birthdate;
+    private LocalDate registrationDate;
 }
