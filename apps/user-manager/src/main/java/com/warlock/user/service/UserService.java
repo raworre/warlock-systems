@@ -1,6 +1,5 @@
 package com.warlock.user.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warlock.user.model.LoginRequest;
 import com.warlock.user.model.ProfileDocument;
 import com.warlock.user.model.RegistrationRequest;
@@ -22,7 +21,6 @@ import java.util.Date;
 public class UserService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
-    private final ObjectMapper mapper;
 
     public String login(LoginRequest loginRequest) {
         var user = userRepository.findByUsername(loginRequest.getUsername());
