@@ -1,20 +1,13 @@
 package com.warlock.user.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.warlock.user.model.RegistrationRequest;
-import com.warlock.user.service.UserService;
 import com.warlock.user.service.UsernameAlreadyExistsException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 
@@ -24,18 +17,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
-public class UserControllerRegisterTest {
-    private static final LocalDate BIRTHDATE = LocalDate.parse("1981-06-18");
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    @MockBean
-    private UserService service;
-
+public class UserControllerRegisterTest extends UserControllerTest {
     @Test
     void register_ReturnsBadRequest() throws Exception {
         var emptyRegisterRequest = RegistrationRequest.builder().build();
