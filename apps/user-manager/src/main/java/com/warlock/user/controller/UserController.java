@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.validation.Valid;
 
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
 
 @Controller
 @RequiredArgsConstructor
@@ -52,7 +53,10 @@ public class UserController {
             @RequestBody @Valid LoginRequest loginRequest
     ) {
         var token = userService.login(loginRequest);
-        return ok(UserToken.builder().token(token).build());
+        return status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .body(UserToken.builder().token(token).build());
     }
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
