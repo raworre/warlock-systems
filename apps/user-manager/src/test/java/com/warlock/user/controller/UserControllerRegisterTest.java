@@ -137,6 +137,9 @@ public class UserControllerRegisterTest {
                 .getSubject();
 
         assertThat(sub).isEqualTo(registerRequest.getUsername());
+
+        var authHeader = result.getResponse().getHeader("Authorization");
+        assertThat(authHeader).isEqualTo("Bearer " + token);
     }
 
     @Test
