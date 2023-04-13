@@ -8,6 +8,12 @@ and this project adheres to
 
 ## Unreleased
 
+### Added
+
+- `/register` endpoint checks that registration request is valid, if username
+  already exists in database, and, if not, creates a new user and profile and
+  returns a token.
+
 ### Changed
 
 - `/login` endpoint is a POST operation and accepts a validated request body and
