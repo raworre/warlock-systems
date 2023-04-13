@@ -1,8 +1,10 @@
 package com.warlock.user.controller;
 
 import com.warlock.user.model.LoginRequest;
+import com.warlock.user.model.RegistrationRequest;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
+import com.warlock.user.service.UsernameAlreadyExistsException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,19 +37,42 @@ public class UserController {
     @ApiResponse(
             responseCode = "200",
             description = "Successfully logged in",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UserToken.class)))
     @ApiResponse(
             responseCode = "400",
             description = "Request body is invalid",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(hidden = true)))
+            content = @Content(schema = @Schema(hidden = true)))
     @ApiResponse(
             responseCode = "401",
             description = "User not recognized",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(hidden = true)))
+            content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity<UserToken> login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
         var token = userService.login(loginRequest);
+        return ok(UserToken.builder().token(token).build());
+    }
+
+    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Registers new user",
+            description = "Takes a registration object and creates a new user before returning a valid access token for future operations")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully registered and logged in",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UserToken.class)))
+    @ApiResponse(
+            responseCode = "400",
+            description = "Registration is invalid",
+            content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity<UserToken> register(
+            @RequestBody @Valid RegistrationRequest registrationRequest
+    ) {
+        var token = userService.register(registrationRequest);
         return ok(UserToken.builder().token(token).build());
     }
 
@@ -58,4 +83,8 @@ public class UserController {
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handleBadCredentials() { }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleUsernameAlreadyExists() { }
 }

@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class UserServiceTest {
+public class UserServiceLoginTest {
     @Autowired
     private UserService service;
 
