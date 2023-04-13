@@ -2,9 +2,11 @@ package com.warlock.user.controller;
 
 import com.warlock.user.model.LoginRequest;
 import com.warlock.user.model.RegistrationRequest;
+import com.warlock.user.model.UserProfile;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
 import com.warlock.user.service.UsernameAlreadyExistsException;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,13 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
 @Controller
@@ -72,6 +72,33 @@ public class UserController {
             @RequestBody @Valid RegistrationRequest registrationRequest
     ) {
         return buildResponse(userService.register(registrationRequest));
+    }
+
+    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Fetches user profile",
+            description = "Returns the user profile based on the given token")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully fetched user profile",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UserProfile.UserProfileBuilder.class)))
+    @ApiResponse(
+            responseCode = "401",
+            description = "User is not authorized",
+            content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity<UserProfile> profile(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        var token = authHeader.replace("Bearer ", "");
+        var username = Jwts.parser()
+                .setSigningKey("secretKey")
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
+        return ok(UserProfile.builder().build());
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)

@@ -13,6 +13,7 @@ and this project adheres to
 - `/register` endpoint checks that registration request is valid, if username
   already exists in database, and, if not, creates a new user and profile and
   returns a token and an `Authorization` header.
+- `/profile` endpoint reads the `Bearer` token from the `Authorization` header.
 
 ### Changed
 
