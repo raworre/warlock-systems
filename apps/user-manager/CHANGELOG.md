@@ -12,7 +12,7 @@ and this project adheres to
 
 - `/register` endpoint checks that registration request is valid, if username
   already exists in database, and, if not, creates a new user and profile and
-  returns a token.
+  returns a token and an `Authorization` header.
 
 ### Changed
 
@@ -21,6 +21,8 @@ and this project adheres to
   token who's `sub` field is the `username` from the login request body.
 - `/login` endpoint hashes the value of the `password` field from the request
   and compares the result to the value stored in the database.
+- `/login` endpoint now adds the `token` from the response body to the 
+  `Authorization` header of the response.
 
 ## user-manager-v0.0.1
 

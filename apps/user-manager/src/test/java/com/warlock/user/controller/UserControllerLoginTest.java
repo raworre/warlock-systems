@@ -92,6 +92,9 @@ public class UserControllerLoginTest {
                 .getSubject();
 
         assertThat(sub).isEqualTo(loginUsername);
+
+        var authHeader = result.getResponse().getHeader("Authorization");
+        assertThat(authHeader).isEqualTo("Bearer " + token);
     }
 
     @Test

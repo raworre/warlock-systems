@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.validation.Valid;
 
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
 
 @Controller
 @RequiredArgsConstructor
@@ -51,8 +51,7 @@ public class UserController {
     public ResponseEntity<UserToken> login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
-        var token = userService.login(loginRequest);
-        return ok(UserToken.builder().token(token).build());
+        return buildResponse(userService.login(loginRequest));
     }
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,8 +71,7 @@ public class UserController {
     public ResponseEntity<UserToken> register(
             @RequestBody @Valid RegistrationRequest registrationRequest
     ) {
-        var token = userService.register(registrationRequest);
-        return ok(UserToken.builder().token(token).build());
+        return buildResponse(userService.register(registrationRequest));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -87,4 +85,11 @@ public class UserController {
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleUsernameAlreadyExists() { }
+
+    private ResponseEntity<UserToken> buildResponse(String token) {
+        return status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .body(UserToken.builder().token(token).build());
+    }
 }
