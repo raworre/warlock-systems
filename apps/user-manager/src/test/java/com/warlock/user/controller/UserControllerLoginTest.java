@@ -1,6 +1,7 @@
 package com.warlock.user.controller;
 
 
+import com.warlock.user.TestUtils;
 import com.warlock.user.model.LoginRequest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,9 +26,9 @@ public class UserControllerLoginTest extends UserControllerTest {
     void login_ReturnsBadRequest() throws Exception {
         var emptyLoginRequest = LoginRequest.builder().build();
         var missingUsernameRequest =
-                LoginRequest.builder().password("password").build();
+                LoginRequest.builder().password(TestUtils.TEST_USER.getPassword()).build();
         var missingPasswordRequest =
-                LoginRequest.builder().username("username").build();
+                LoginRequest.builder().username(TestUtils.TEST_USER.getUsername()).build();
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -49,16 +50,15 @@ public class UserControllerLoginTest extends UserControllerTest {
 
     @Test
     void login_ReturnsOk() throws Exception {
-        var loginUsername = "hrothgar.warlock";
         var generatedToken = Jwts.builder()
-                .setSubject(loginUsername)
+                .setSubject(TestUtils.TEST_USER.getUsername())
                 .setIssuedAt(new Date())
                 .signWith(SignatureAlgorithm.HS512, "secretKey")
                 .compact();
         when(service.login(any())).thenReturn(generatedToken);
         var loginRequest = LoginRequest.builder()
-                .password("username")
-                .username(loginUsername).build();
+                .password(TestUtils.TEST_USER.getPassword())
+                .username(TestUtils.TEST_USER.getUsername()).build();
 
         var result = mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +75,7 @@ public class UserControllerLoginTest extends UserControllerTest {
                 .getBody()
                 .getSubject();
 
-        assertThat(sub).isEqualTo(loginUsername);
+        assertThat(sub).isEqualTo(TestUtils.TEST_USER.getUsername());
 
         var authHeader = result.getResponse().getHeader("Authorization");
         assertThat(authHeader).isEqualTo("Bearer " + token);
@@ -83,10 +83,9 @@ public class UserControllerLoginTest extends UserControllerTest {
 
     @Test
     public void login_UsernameNotFoundReturnsUnauthorized() throws Exception {
-        var loginUsername = "hrothgar.warlock";
         var loginRequest = LoginRequest.builder()
-                .password("username")
-                .username(loginUsername).build();
+                .password(TestUtils.TEST_USER.getPassword())
+                .username(TestUtils.TEST_USER.getUsername()).build();
         when(service.login(any())).thenThrow(new UsernameNotFoundException(""));
 
         mockMvc.perform(post("/login")
@@ -97,10 +96,9 @@ public class UserControllerLoginTest extends UserControllerTest {
 
     @Test
     public void login_BadPasswordReturnsUnauthorized() throws Exception {
-        var loginUsername = "hrothgar.warlock";
         var loginRequest = LoginRequest.builder()
-                .password("username")
-                .username(loginUsername).build();
+                .password(TestUtils.TEST_USER.getPassword())
+                .username(TestUtils.TEST_USER.getUsername()).build();
         when(service.login(any())).thenThrow(new BadCredentialsException(""));
 
         mockMvc.perform(post("/login")

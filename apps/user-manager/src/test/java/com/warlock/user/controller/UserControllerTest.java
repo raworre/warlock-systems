@@ -11,8 +11,6 @@ import java.time.LocalDate;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
-    static final LocalDate BIRTHDATE = LocalDate.parse("1981-06-18");
-
     @Autowired
     MockMvc mockMvc;
 

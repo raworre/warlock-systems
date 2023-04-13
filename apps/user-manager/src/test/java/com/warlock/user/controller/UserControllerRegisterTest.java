@@ -1,6 +1,7 @@
 package com.warlock.user.controller;
 
 
+import com.warlock.user.TestUtils;
 import com.warlock.user.model.RegistrationRequest;
 import com.warlock.user.service.UsernameAlreadyExistsException;
 import io.jsonwebtoken.Jwts;
@@ -22,34 +23,34 @@ public class UserControllerRegisterTest extends UserControllerTest {
     void register_ReturnsBadRequest() throws Exception {
         var emptyRegisterRequest = RegistrationRequest.builder().build();
         var missingUsernameRequest = RegistrationRequest.builder()
-                .password("password")
-                .birthdate(BIRTHDATE)
-                .firstName("Hrothgar")
-                .lastName("Warlock")
+                .password(TestUtils.TEST_USER.getPassword())
+                .birthdate(TestUtils.TEST_PROFILE.getBirthdate())
+                .firstName(TestUtils.TEST_PROFILE.getFirstName())
+                .lastName(TestUtils.TEST_PROFILE.getLastName())
                 .build();
         var missingPasswordRequest = RegistrationRequest.builder()
-                .username("username")
-                .birthdate(BIRTHDATE)
-                .firstName("Hrothgar")
-                .lastName("Warlock")
+                .username(TestUtils.TEST_USER.getUsername())
+                .birthdate(TestUtils.TEST_PROFILE.getBirthdate())
+                .firstName(TestUtils.TEST_PROFILE.getFirstName())
+                .lastName(TestUtils.TEST_PROFILE.getLastName())
                 .build();
         var missingFirstNameRequest = RegistrationRequest.builder()
-                .username("username")
-                .password("password")
-                .birthdate(BIRTHDATE)
-                .lastName("Warlock")
+                .username(TestUtils.TEST_USER.getUsername())
+                .password(TestUtils.TEST_USER.getPassword())
+                .birthdate(TestUtils.TEST_PROFILE.getBirthdate())
+                .lastName(TestUtils.TEST_PROFILE.getLastName())
                 .build();
         var missingLastNameRequest = RegistrationRequest.builder()
-                .username("username")
-                .password("password")
-                .birthdate(BIRTHDATE)
-                .firstName("Hrothgar")
+                .username(TestUtils.TEST_USER.getUsername())
+                .password(TestUtils.TEST_USER.getPassword())
+                .birthdate(TestUtils.TEST_PROFILE.getBirthdate())
+                .firstName(TestUtils.TEST_PROFILE.getFirstName())
                 .build();
         var missingBirthdateRequest = RegistrationRequest.builder()
-                .username("username")
-                .password("password")
-                .firstName("Hrothgar")
-                .lastName("Warlock")
+                .username(TestUtils.TEST_USER.getUsername())
+                .password(TestUtils.TEST_USER.getPassword())
+                .firstName(TestUtils.TEST_PROFILE.getFirstName())
+                .lastName(TestUtils.TEST_PROFILE.getLastName())
                 .build();
 
         mockMvc.perform(post("/register")
@@ -88,11 +89,11 @@ public class UserControllerRegisterTest extends UserControllerTest {
     @Test
     void register_ReturnsOk() throws Exception {
         var registerRequest = RegistrationRequest.builder()
-                .username("username")
-                .password("password")
-                .firstName("Hrothgar")
-                .lastName("Warlock")
-                .birthdate(BIRTHDATE)
+                .username(TestUtils.TEST_USER.getUsername())
+                .password(TestUtils.TEST_USER.getPassword())
+                .birthdate(TestUtils.TEST_PROFILE.getBirthdate())
+                .firstName(TestUtils.TEST_PROFILE.getFirstName())
+                .lastName(TestUtils.TEST_PROFILE.getLastName())
                 .build();
         var generatedToken = Jwts.builder()
                 .setSubject(registerRequest.getUsername())
@@ -127,11 +128,11 @@ public class UserControllerRegisterTest extends UserControllerTest {
     @Test
     void register_UserExistsReturnsBadRequest() throws Exception {
         var registerRequest = RegistrationRequest.builder()
-                .username("username")
-                .password("password")
-                .firstName("Hrothgar")
-                .lastName("Warlock")
-                .birthdate(BIRTHDATE)
+                .username(TestUtils.TEST_USER.getUsername())
+                .password(TestUtils.TEST_USER.getPassword())
+                .birthdate(TestUtils.TEST_PROFILE.getBirthdate())
+                .firstName(TestUtils.TEST_PROFILE.getFirstName())
+                .lastName(TestUtils.TEST_PROFILE.getLastName())
                 .build();
         when(service.register(eq(registerRequest)))
                 .thenThrow(new UsernameAlreadyExistsException(""));
