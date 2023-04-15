@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -20,10 +21,11 @@ public class UserControllerProfileTest extends UserControllerTest{
                 .setIssuedAt(new Date())
                 .signWith(SignatureAlgorithm.HS512, "secretKey")
                 .compact();
+        when(service.fetchProfile(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/profile").header("Authorization", generatedToken))
                 .andExpect(status().isOk());
 
-        verifyNoInteractions(service);
+        verify(service, times(1)).fetchProfile(anyString());
     }
 }

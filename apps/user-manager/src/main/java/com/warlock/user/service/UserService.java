@@ -1,14 +1,13 @@
 package com.warlock.user.service;
 
-import com.warlock.user.model.LoginRequest;
-import com.warlock.user.model.ProfileDocument;
-import com.warlock.user.model.RegistrationRequest;
-import com.warlock.user.model.UserDocument;
+import com.warlock.user.model.*;
 import com.warlock.user.repository.ProfileRepository;
 import com.warlock.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.expression.AccessException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +18,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
@@ -46,6 +46,17 @@ public class UserService {
         var savedUser = saveUser(registrationRequest);
 
         return buildToken(savedUser.getUsername());
+    }
+
+    public UserProfile fetchProfile(String token) throws AccessException {
+        try {
+            var jwt = Jwts.parser().parse(token);
+            log.info("JWT body: {}", jwt.getBody());
+        } catch (IllegalArgumentException ex) {
+            log.error("Provided JWT is invalid");
+            throw new AccessException("");
+        }
+        return null;
     }
 
     private UserDocument saveUser(RegistrationRequest registrationRequest) {

@@ -6,12 +6,13 @@ import com.warlock.user.model.UserProfile;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
 import com.warlock.user.service.UsernameAlreadyExistsException;
-import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import static org.springframework.http.ResponseEntity.status;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -51,7 +53,7 @@ public class UserController {
     public ResponseEntity<UserToken> login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
-        return buildResponse(userService.login(loginRequest));
+        return buildTokenResponse(userService.login(loginRequest));
     }
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,7 +73,7 @@ public class UserController {
     public ResponseEntity<UserToken> register(
             @RequestBody @Valid RegistrationRequest registrationRequest
     ) {
-        return buildResponse(userService.register(registrationRequest));
+        return buildTokenResponse(userService.register(registrationRequest));
     }
 
     @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -90,15 +92,9 @@ public class UserController {
             content = @Content(schema = @Schema(hidden = true)))
     public ResponseEntity<UserProfile> profile(
             @RequestHeader("Authorization") String authHeader
-    ) {
+    ) throws AccessException {
         var token = authHeader.replace("Bearer ", "");
-        var username = Jwts.parser()
-                .setSigningKey("secretKey")
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-
-        return ok(UserProfile.builder().build());
+        return ok(userService.fetchProfile(token));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -113,7 +109,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleUsernameAlreadyExists() { }
 
-    private ResponseEntity<UserToken> buildResponse(String token) {
+    private ResponseEntity<UserToken> buildTokenResponse(String token) {
         return status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
