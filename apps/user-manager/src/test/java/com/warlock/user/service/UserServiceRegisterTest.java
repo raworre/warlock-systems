@@ -3,13 +3,8 @@ package com.warlock.user.service;
 import com.warlock.user.model.ProfileDocument;
 import com.warlock.user.model.RegistrationRequest;
 import com.warlock.user.model.UserDocument;
-import com.warlock.user.repository.ProfileRepository;
-import com.warlock.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDate;
 
@@ -18,17 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class UserServiceRegisterTest {
-    @Autowired
-    private UserService service;
-
-    @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
-    private ProfileRepository profileRepository;
-
+public class UserServiceRegisterTest extends UserServiceTest {
     @Test
     public void register_ShouldReturnToken() {
         var registerRequest = RegistrationRequest.builder()

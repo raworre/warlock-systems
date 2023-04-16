@@ -2,6 +2,7 @@ package com.warlock.user.controller;
 
 import com.warlock.user.model.LoginRequest;
 import com.warlock.user.model.RegistrationRequest;
+import com.warlock.user.model.UserProfile;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
 import com.warlock.user.service.UsernameAlreadyExistsException;
@@ -10,23 +11,24 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -51,7 +53,7 @@ public class UserController {
     public ResponseEntity<UserToken> login(
             @RequestBody @Valid LoginRequest loginRequest
     ) {
-        return buildResponse(userService.login(loginRequest));
+        return buildTokenResponse(userService.login(loginRequest));
     }
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,8 +73,33 @@ public class UserController {
     public ResponseEntity<UserToken> register(
             @RequestBody @Valid RegistrationRequest registrationRequest
     ) {
-        return buildResponse(userService.register(registrationRequest));
+        return buildTokenResponse(userService.register(registrationRequest));
     }
+
+    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Fetches user profile",
+            description = "Returns the user profile based on the given token")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully fetched user profile",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UserProfile.UserProfileBuilder.class)))
+    @ApiResponse(
+            responseCode = "401",
+            description = "User is not authorized",
+            content = @Content(schema = @Schema(hidden = true)))
+    public ResponseEntity<UserProfile> profile(
+            @RequestHeader("Authorization") String authHeader
+    ) throws AccessException {
+        var token = authHeader.replace("Bearer ", "");
+        return ok(userService.fetchProfile(token));
+    }
+
+    @ExceptionHandler(AccessException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public void handleInvalidToken() { }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -86,7 +113,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleUsernameAlreadyExists() { }
 
-    private ResponseEntity<UserToken> buildResponse(String token) {
+    private ResponseEntity<UserToken> buildTokenResponse(String token) {
         return status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token)
