@@ -8,6 +8,12 @@ and this project adheres to
 
 ## Unreleased
 
-- Defined Kubernetes manifest for User Manager
+- Updating manifest for User Manager v0.0.2
+
+## warlock-local-v0.0.1
+
+### Added
+
+- Defined Kubernetes manifest for User Manager v0.0.1
 - Defined Kubernetes manifests for the core MongoDB and Kong API gateway
   resources.

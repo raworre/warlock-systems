@@ -1,3 +1,21 @@
 server:
   servlet:
     context-path: /user-manager
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://service-gateway:30000
+      database: user
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    org.springdoc: DEBUG
