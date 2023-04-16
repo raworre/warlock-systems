@@ -8,6 +8,8 @@ and this project adheres to
 
 ## Unreleased
 
+## user-manager-v0.0.2
+
 ### Added
 
 - `/register` endpoint checks that registration request is valid, if username
@@ -25,7 +27,7 @@ and this project adheres to
 - `/login` endpoint now adds the `token` from the response body to the 
   `Authorization` header of the response.
 
-## user-manager-v0.0.1
+## user-manager-v0.0.1 2023-04-09
 
 ### Added
 
