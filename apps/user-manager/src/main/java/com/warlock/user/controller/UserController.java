@@ -6,6 +6,7 @@ import com.warlock.user.model.UserProfile;
 import com.warlock.user.model.UserToken;
 import com.warlock.user.service.UserService;
 import com.warlock.user.service.UsernameAlreadyExistsException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -112,6 +113,10 @@ public class UserController {
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handleUsernameAlreadyExists() { }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public void handleExpiredToken() { }
 
     private ResponseEntity<UserToken> buildTokenResponse(String token) {
         return status(HttpStatus.OK)

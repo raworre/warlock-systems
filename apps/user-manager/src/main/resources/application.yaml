@@ -19,3 +19,7 @@ springdoc:
 logging:
   level:
     org.springdoc: DEBUG
+
+user-service:
+  token:
+    expirationSeconds: 30

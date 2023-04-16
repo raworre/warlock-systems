@@ -6,12 +6,14 @@ import com.warlock.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.AccessException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -23,6 +25,9 @@ public class UserService {
     private final ProfileRepository profileRepository;
     private final JwtParser jwtParser;
     private final JwtBuilder jwtBuilder;
+
+    @Value("${user-service.token.expirationSeconds}")
+    private long expirationSeconds;
 
     public String login(LoginRequest loginRequest) {
         var user = userRepository.findByUsername(loginRequest.getUsername());
@@ -99,10 +104,13 @@ public class UserService {
     }
 
     private String buildToken(String username) {
+        log.info("Token expires in {} seconds", expirationSeconds);
+        var expiryTime = Date.from(Instant.now().plusSeconds(expirationSeconds));
         return jwtBuilder
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .signWith(SignatureAlgorithm.HS512, "secretKey")
+                .setExpiration(expiryTime)
                 .compact();
     }
 }
