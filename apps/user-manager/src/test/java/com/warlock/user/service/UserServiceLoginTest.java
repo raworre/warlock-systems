@@ -2,7 +2,6 @@ package com.warlock.user.service;
 
 import com.warlock.user.model.LoginRequest;
 import com.warlock.user.model.UserDocument;
-import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +25,7 @@ public class UserServiceLoginTest extends UserServiceTest {
         when(userRepository.findByUsername(anyString())).thenReturn(userDocument);
         var token = service.login(loginRequest);
 
-        var username = Jwts.parser()
+        var username = jwtParser
                 .setSigningKey("secretKey")
                 .parseClaimsJws(token)
                 .getBody()

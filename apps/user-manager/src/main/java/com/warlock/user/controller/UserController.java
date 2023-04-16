@@ -97,6 +97,10 @@ public class UserController {
         return ok(userService.fetchProfile(token));
     }
 
+    @ExceptionHandler(AccessException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public void handleInvalidToken() { }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handleUserNotFound() { }
