@@ -8,6 +8,11 @@ and this project adheres to
 
 ## Unreleased
 
+### Changed
+
+- Tokens generated with `/login` and `/register` operations now expire after a
+  configurable number of seconds has elapsed.
+
 ## user-manager-v0.0.2
 
 ### Added
