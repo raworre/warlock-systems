@@ -98,25 +98,13 @@ public class UserController {
         return ok(userService.fetchProfile(token));
     }
 
-    @ExceptionHandler(AccessException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleInvalidToken() { }
-
-    @ExceptionHandler(UsernameNotFoundException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleUserNotFound() { }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleBadCredentials() { }
-
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleUsernameAlreadyExists() { }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleExpiredToken() { }
+    @PostMapping(value = "/profile/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserProfile> updateProfile(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody Object requestBody
+    ) {
+        return ok().build();
+    }
 
     private ResponseEntity<UserToken> buildTokenResponse(String token) {
         return status(HttpStatus.OK)

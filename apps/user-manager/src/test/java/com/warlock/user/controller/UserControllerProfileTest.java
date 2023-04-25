@@ -30,7 +30,7 @@ public class UserControllerProfileTest extends UserControllerTest {
     }
 
     @Test
-    void profile_ReturnsUnauthorized() throws Exception {
+    void profile_ReturnsUnauthorizedWhenUserNotFound() throws Exception {
         when(service.fetchProfile(anyString())).thenThrow(new AccessException(""));
 
         mockMvc.perform(get("/profile").header("Authorization", ""))
