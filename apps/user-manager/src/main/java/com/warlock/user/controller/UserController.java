@@ -1,9 +1,6 @@
 package com.warlock.user.controller;
 
-import com.warlock.user.model.LoginRequest;
-import com.warlock.user.model.RegistrationRequest;
-import com.warlock.user.model.UserProfile;
-import com.warlock.user.model.UserToken;
+import com.warlock.user.model.*;
 import com.warlock.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,8 +97,10 @@ public class UserController {
     @PostMapping(value = "/profile/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserProfile> updateProfile(
             @RequestHeader("Authorization") String authHeader,
-            @RequestBody Object requestBody
-    ) {
+            @RequestBody ProfileUpdateRequest request
+    ) throws AccessException {
+        var token = authHeader.replace("Bearer ", "");
+        var newUser = userService.updateProfile(token, request);
         return ok().build();
     }
 
