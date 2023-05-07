@@ -8,6 +8,11 @@ and this project adheres to
 
 ## Unreleased
 
+### Added
+
+- `/profile/update` takes a profile update JSON object and updates the profile
+  identified by the request token.
+
 ### Changed
 
 - Tokens generated with `/login` and `/register` operations now expire after a

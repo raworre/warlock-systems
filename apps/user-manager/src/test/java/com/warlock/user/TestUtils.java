@@ -2,6 +2,7 @@ package com.warlock.user;
 
 import com.warlock.user.model.ProfileDocument;
 import com.warlock.user.model.UserDocument;
+import com.warlock.user.model.UserProfile;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -22,7 +23,7 @@ public class TestUtils {
             .profile(TEST_PROFILE)
             .build();
 
-    public static final ProfileDocument UPDATED_FIRST_NAME_PROFILE = ProfileDocument.builder()
+    public static final ProfileDocument UPDATED_NAME_PROFILE = ProfileDocument.builder()
             .registrationDate(TEST_PROFILE.getRegistrationDate())
             .firstName("JimBob")
             .lastName("Chucklefuck")
@@ -32,7 +33,15 @@ public class TestUtils {
     public static final UserDocument UPDATED_FIRST_NAME_USER = UserDocument.builder()
             .username("test.username")
             .password("test.password")
-            .profile(UPDATED_FIRST_NAME_PROFILE)
+            .profile(UPDATED_NAME_PROFILE)
+            .build();
+
+    public static final UserProfile UPDATED_PROFILE = UserProfile.builder()
+            .registrationDate(LocalDate.now())
+            .birthdate(UPDATED_NAME_PROFILE.getBirthdate())
+            .firstName(UPDATED_NAME_PROFILE.getFirstName())
+            .lastName(UPDATED_NAME_PROFILE.getLastName())
+            .username(TEST_USER.getUsername())
             .build();
 
     public static String basicToken(JwtBuilder jwtBuilder) {

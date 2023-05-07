@@ -21,7 +21,7 @@ public class UserServiceUpdateProfileTest extends UserServiceTest {
         when(userRepository.findByUsername(anyString()))
                 .thenReturn(TestUtils.TEST_USER);
         when(profileRepository.save(any()))
-                .thenReturn(TestUtils.UPDATED_FIRST_NAME_PROFILE);
+                .thenReturn(TestUtils.UPDATED_NAME_PROFILE);
         when(userRepository.save(any()))
                 .thenReturn(TestUtils.UPDATED_FIRST_NAME_USER);
 

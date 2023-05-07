@@ -100,8 +100,7 @@ public class UserController {
             @RequestBody ProfileUpdateRequest request
     ) throws AccessException {
         var token = authHeader.replace("Bearer ", "");
-        var newUser = userService.updateProfile(token, request);
-        return ok().build();
+        return ok(userService.updateProfile(token, request));
     }
 
     private ResponseEntity<UserToken> buildTokenResponse(String token) {
