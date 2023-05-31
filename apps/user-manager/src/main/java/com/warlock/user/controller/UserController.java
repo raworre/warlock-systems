@@ -1,12 +1,7 @@
 package com.warlock.user.controller;
 
-import com.warlock.user.model.LoginRequest;
-import com.warlock.user.model.RegistrationRequest;
-import com.warlock.user.model.UserProfile;
-import com.warlock.user.model.UserToken;
+import com.warlock.user.model.*;
 import com.warlock.user.service.UserService;
-import com.warlock.user.service.UsernameAlreadyExistsException;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,10 +12,11 @@ import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
 
@@ -98,25 +94,14 @@ public class UserController {
         return ok(userService.fetchProfile(token));
     }
 
-    @ExceptionHandler(AccessException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleInvalidToken() { }
-
-    @ExceptionHandler(UsernameNotFoundException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleUserNotFound() { }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleBadCredentials() { }
-
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleUsernameAlreadyExists() { }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public void handleExpiredToken() { }
+    @PostMapping(value = "/profile/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserProfile> updateProfile(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody ProfileUpdateRequest request
+    ) throws AccessException {
+        var token = authHeader.replace("Bearer ", "");
+        return ok(userService.updateProfile(token, request));
+    }
 
     private ResponseEntity<UserToken> buildTokenResponse(String token) {
         return status(HttpStatus.OK)

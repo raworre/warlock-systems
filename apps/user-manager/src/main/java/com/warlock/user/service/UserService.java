@@ -56,10 +56,7 @@ public class UserService {
 
     public UserProfile fetchProfile(String token) throws AccessException {
         var username = extractUsername(token);
-        var user = userRepository.findByUsername(username);
-        if (null == user) {
-            throw new UsernameNotFoundException("User not found");
-        }
+        var user = fetchUser(username);
         return UserProfile.builder()
                 .username(user.getUsername())
                 .firstName(user.getProfile().getFirstName())
@@ -67,6 +64,32 @@ public class UserService {
                 .birthdate(user.getProfile().getBirthdate())
                 .registrationDate(user.getProfile().getRegistrationDate())
                 .build();
+    }
+
+    public UserProfile updateProfile(String token, ProfileUpdateRequest request) throws AccessException {
+        if (null == request.getBirthdate() && null == request.getFirstName() && null == request.getLastName()) {
+            throw new IllegalArgumentException("At least one field must be updated");
+        }
+        var username = extractUsername(token);
+        var newUser = updateUser(username, request);
+        return UserProfile.builder()
+                .username(newUser.getUsername())
+                .firstName(newUser.getProfile().getFirstName())
+                .lastName(newUser.getProfile().getLastName())
+                .birthdate(newUser.getProfile().getBirthdate())
+                .registrationDate(newUser.getProfile().getRegistrationDate())
+                .build();
+    }
+
+    private String buildToken(String username) {
+        log.info("Token expires in {} seconds", expirationSeconds);
+        var expiryTime = Date.from(Instant.now().plusSeconds(expirationSeconds));
+        return jwtBuilder
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .signWith(SignatureAlgorithm.HS512, "secretKey")
+                .setExpiration(expiryTime)
+                .compact();
     }
 
     private String extractUsername(String token) throws AccessException {
@@ -86,6 +109,20 @@ public class UserService {
         }
     }
 
+    private UserDocument fetchUser(String username) {
+        var user = userRepository.findByUsername(username);
+        if (null == user) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return user;
+    }
+
+    private boolean profilesMatch(ProfileDocument oldProfile, ProfileUpdateRequest newProfile) {
+        return (newProfile.getBirthdate() == null || oldProfile.getBirthdate().equals(newProfile.getBirthdate())) &&
+                (newProfile.getFirstName() == null || oldProfile.getFirstName().equals(newProfile.getFirstName())) &&
+                (newProfile.getLastName() == null || oldProfile.getLastName().equals(newProfile.getLastName()));
+    }
+
     private UserDocument saveUser(RegistrationRequest registrationRequest) {
         var profileDoc = ProfileDocument.builder()
                 .firstName(registrationRequest.getFirstName())
@@ -103,14 +140,24 @@ public class UserService {
         return userRepository.save(userDoc);
     }
 
-    private String buildToken(String username) {
-        log.info("Token expires in {} seconds", expirationSeconds);
-        var expiryTime = Date.from(Instant.now().plusSeconds(expirationSeconds));
-        return jwtBuilder
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS512, "secretKey")
-                .setExpiration(expiryTime)
-                .compact();
+    private UserDocument updateUser(String username, ProfileUpdateRequest request) {
+        var oldUser = fetchUser(username);
+        var oldProfile = oldUser.getProfile();
+        if (profilesMatch(oldProfile, request)) {
+            throw new IllegalArgumentException("At least one field must be updated");
+        }
+        if (request.getFirstName() != null) {
+            oldProfile.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            oldProfile.setLastName(request.getLastName());
+        }
+        if (request.getBirthdate() != null) {
+            oldProfile.setBirthdate(request.getBirthdate());
+        }
+        var newProfile = profileRepository.save(oldProfile);
+
+        oldUser.setProfile(newProfile);
+        return userRepository.save(oldUser);
     }
 }
