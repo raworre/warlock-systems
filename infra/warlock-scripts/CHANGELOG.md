@@ -10,6 +10,14 @@ and this project adheres to
 
 ### Added
 
+- `core/tag-version` script checks folder for component information to add a new
+  Git tag to the repository.
+- `core/push` script added with intention of pushing changes and tags to Git
+
+## warlock-scripts-v0.0.1
+
+### Added
+
 - `core/sync` script pulls updates from Git in the given folder.
 - `environment/deploy-resource` script takes a list of Kubernetes manifest
   files and attempts to deploy them to the current Minikube cluster.

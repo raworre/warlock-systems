@@ -1,0 +1,8 @@
+#!/bin/bash
+
+SYNC_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SYNC_SCRIPT="${SYNC_SCRIPT_DIR}/sync"
+
+"${SYNC_SCRIPT}"
+
+echo "Pushing changes to Git..."

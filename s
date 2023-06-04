@@ -1,1 +1,1 @@
-infra/scripts/core
+infra/warlock-scripts/core

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+readarray -t CURRENT_TAGS < <(git tag)
+
+LOCATION=$(pwd)
+COMPONENT_NAME=$(basename "$PWD")
+NEW_TAG=""
+
+echo "Looking file to extract version from..."
+echo "Current directory: $LOCATION"
+echo "Assumed component name: $COMPONENT_NAME"
+
+if [ -e "${LOCATION}/gradlew" ]; then
+  echo "Extracting version from Gradle properties..."
+  COMPONENT_VERSION=$(grep -s -oP "version = '\K[^']+" build.gradle)
+  if [ -z "$COMPONENT_VERSION" ]; then
+    COMPONENT_VERSION=$(grep -s -oP "version=\K.+" gradle.properties)
+  fi
+  if [ -z "$COMPONENT_VERSION" ]; then
+    echo "Could not extract version number from Gradle..."
+    exit;
+  fi
+  echo "Assumed component version from Gradle: $COMPONENT_VERSION"
+  NEW_TAG="$COMPONENT_NAME-v$COMPONENT_VERSION"
+elif [ -n "$(find "${LOCATION}" -maxdepth 1 -name '*.sln' -print -quit)" ]; then
+  echo "Extracting version from .NET Solution file..."
+elif [ -e "${LOCATION}/CHANGELOG.md" ]; then
+  echo "Extracting version from latest entry in CHANGELOG..."
+  COMPONENT_VERSION=$(awk -v ver="$COMPONENT_NAME" '$0 ~ "## "ver"-v" {version=$0} END{print substr(version, 6+length(ver))}' "${LOCATION}/CHANGELOG.md")
+  echo "Extracted component version: ${COMPONENT_VERSION}"
+  NEW_TAG="$COMPONENT_NAME-v$COMPONENT_VERSION"
+else
+  echo "No file found to extract version number from..."
+fi
+
+if [ -n "${NEW_TAG}" ]; then
+  for TAG in "${CURRENT_TAGS[@]}"; do
+    if [ "$TAG" == "$NEW_TAG" ]; then
+      echo "Tag $NEW_TAG already exists..."
+      exit;
+    fi
+  done
+  echo "Adding Git tag \"$NEW_TAG\" for component..."
+  git tag "$NEW_TAG"
+else
+  echo "No tag..."
+fi
