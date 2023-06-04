@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>metric_service</RootNamespace>
+        <Version>0.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
