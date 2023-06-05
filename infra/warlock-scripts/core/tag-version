@@ -24,6 +24,13 @@ if [ -e "${LOCATION}/gradlew" ]; then
   NEW_TAG="$COMPONENT_NAME-v$COMPONENT_VERSION"
 elif [ -n "$(find "${LOCATION}" -maxdepth 1 -name '*.sln' -print -quit)" ]; then
   echo "Extracting version from .NET Solution file..."
+  COMPONENT_VERSION=$(grep -s -oP "<Version>\K.+?(?=</Version>)" "$COMPONENT_NAME.csproj")
+  if [ -z "$COMPONENT_VERSION" ]; then
+    echo "Could not extract version number from CSPROJ file..."
+    exit;
+  fi
+  echo "Assumed component version from CSPROJ file: $COMPONENT_VERSION"
+  NEW_TAG="$COMPONENT_NAME-v$COMPONENT_VERSION"
 elif [ -e "${LOCATION}/CHANGELOG.md" ]; then
   echo "Extracting version from latest entry in CHANGELOG..."
   COMPONENT_VERSION=$(awk -v ver="$COMPONENT_NAME" '$0 ~ "## "ver"-v" {version=$0} END{print substr(version, 6+length(ver))}' "${LOCATION}/CHANGELOG.md")
