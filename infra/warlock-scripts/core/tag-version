@@ -6,8 +6,6 @@ LOCATION=$(pwd)
 COMPONENT_NAME=$(basename "$PWD")
 NEW_TAG=""
 
-echo "Looking file to extract version from..."
-echo "Current directory: $LOCATION"
 echo "Assumed component name: $COMPONENT_NAME"
 
 if [ -e "${LOCATION}/gradlew" ]; then
